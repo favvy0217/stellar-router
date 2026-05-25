@@ -366,6 +366,14 @@ impl RouterExecution {
         })
     }
 
+    /// Get the current admin address.
+    pub fn admin(env: Env) -> Address {
+        env.storage()
+            .instance()
+            .get(&DataKey::Admin)
+            .expect("router-execution not initialized")
+    }
+
     /// Get cumulative execution statistics.
     ///
     /// Returns `(total_executions, total_errors)`.
@@ -426,6 +434,12 @@ mod tests {
         let admin = Address::generate(&env);
         let result = client.try_initialize(&admin, &6);
         assert_eq!(result, Err(Ok(ExecutionError::InvalidConfig)));
+    }
+
+    #[test]
+    fn test_admin_returns_initialized_admin() {
+        let (_, admin, client) = setup();
+        assert_eq!(client.admin(), admin);
     }
 
     #[test]
